@@ -1,0 +1,9 @@
+# Instale isto só quando for rodar contra um Postgres de verdade
+# (dev usa SQLite por padrão, sem precisar disso).
+#
+#   pip install -r requirements-postgres.txt
+#
+# psycopg (v3) tem melhor suporte a versões novas de Python do que o
+# psycopg2-binary antigo, que ainda não publica wheel pra Python 3.14
+# em alguns sistemas (exigiria compilar com pg_config/PostgreSQL instalado).
+psycopg[binary]==3.2.3

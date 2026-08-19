@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/*
+  Sistema de design "Inglês IA" — inspirado em caderno de estudos / passaporte
+  de idioma. Ver definição completa no plano de design da conversa.
+*/
+@theme {
+  --color-ink: #1B4B5A;        /* azul-tinta — cor primária, marca, botões principais */
+  --color-ink-light: #2E6B7E;  /* variação mais clara pra hover */
+  --color-coral: #FF6F59;      /* coral — ação/destaque (CTA, progresso) */
+  --color-sand: #F7F3ED;       /* areia — fundo geral */
+  --color-sand-dark: #EDE6D9;  /* areia mais escura — bordas, divisores sutis */
+  --color-leaf: #4C9A6A;       /* verde-folha — acerto, sucesso, nível concluído */
+  --color-charcoal: #2B2B2B;   /* grafite — texto principal */
+  --color-charcoal-soft: #5C5C5C; /* texto secundário */
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+body {
+  background-color: var(--color-sand);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+}
+
+/* Foco visível em todo elemento navegável por teclado — acessibilidade */
+:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 2px;
+}
