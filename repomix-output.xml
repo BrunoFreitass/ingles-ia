@@ -3963,99 +3963,6 @@ export function avaliarPronuncia(transcricao, fraseAlvo) {
 }
 </file>
 
-<file path="frontend/src/App.jsx">
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import ProtectedRoute from './components/ProtectedRoute'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import LessonDetail from './pages/LessonDetail'
-import Flashcards from './pages/Flashcards'
-import Quiz from './pages/Quiz'
-import Conversation from './pages/Conversation'
-import Immersion from './pages/Immersion'
-import Review from './pages/Review'
-import Speaking from './pages/Speaking'
-
-export default function App() {
-  return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Register />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/niveis/:levelId/licoes/:lessonId"
-            element={
-              <ProtectedRoute>
-                <LessonDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/niveis/:levelId/licoes/:lessonId/flashcards"
-            element={
-              <ProtectedRoute>
-                <Flashcards />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/niveis/:levelId/licoes/:lessonId/quiz"
-            element={
-              <ProtectedRoute>
-                <Quiz />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/niveis/:levelId/licoes/:lessonId/conversation"
-            element={
-              <ProtectedRoute>
-                <Conversation />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/niveis/:levelId/licoes/:lessonId/fala"
-            element={
-              <ProtectedRoute>
-                <Speaking />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/imersao"
-            element={
-              <ProtectedRoute>
-                <Immersion />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/revisao"
-            element={
-              <ProtectedRoute>
-                <Review />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
-  )
-}
-</file>
-
 <file path="frontend/src/index.css">
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
@@ -5426,6 +5333,114 @@ python-dotenv==1.0.1
 google-generativeai==0.8.3
 </file>
 
+<file path="frontend/src/App.jsx">
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import LessonDetail from './pages/LessonDetail'
+import Flashcards from './pages/Flashcards'
+import Quiz from './pages/Quiz'
+import Conversation from './pages/Conversation'
+import Immersion from './pages/Immersion'
+import Review from './pages/Review'
+import Speaking from './pages/Speaking'
+
+export default function App() {
+  useEffect(() => {
+    // "Acorda" o backend assim que o site carrega, antes mesmo da pessoa
+    // fazer login — em produção, o Render (plano free) coloca o servidor
+    // pra dormir depois de um tempo sem uso, e a primeira requisição real
+    // demoraria 30-50s. Disparando isso cedo (sem esperar resposta), o
+    // servidor já está acordando enquanto a pessoa lê a tela de login.
+    const apiUrl = import.meta.env.VITE_API_URL || ''
+    fetch(`${apiUrl}/`).catch(() => {
+      // Silencioso de propósito: isso é só um "toque" pra acordar o
+      // servidor, falha aqui não deve incomodar o usuário nem aparecer
+      // como erro em lugar nenhum da tela.
+    })
+  }, [])
+
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Register />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/niveis/:levelId/licoes/:lessonId"
+            element={
+              <ProtectedRoute>
+                <LessonDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/niveis/:levelId/licoes/:lessonId/flashcards"
+            element={
+              <ProtectedRoute>
+                <Flashcards />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/niveis/:levelId/licoes/:lessonId/quiz"
+            element={
+              <ProtectedRoute>
+                <Quiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/niveis/:levelId/licoes/:lessonId/conversation"
+            element={
+              <ProtectedRoute>
+                <Conversation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/niveis/:levelId/licoes/:lessonId/fala"
+            element={
+              <ProtectedRoute>
+                <Speaking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/imersao"
+            element={
+              <ProtectedRoute>
+                <Immersion />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/revisao"
+            element={
+              <ProtectedRoute>
+                <Review />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  )
+}
+</file>
+
 <file path="frontend/src/pages/Login.jsx">
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -5439,12 +5454,19 @@ export default function Login() {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [demorando, setDemorando] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (enviando) return // guarda extra contra duplo clique antes do botão desabilitar de vez
     setErro('')
     setEnviando(true)
+    setDemorando(false)
+
+    // Se passar de alguns segundos, provavelmente é o servidor "acordando"
+    // (plano gratuito de hospedagem) — avisa em vez de deixar parecer travado.
+    const timer = setTimeout(() => setDemorando(true), 4000)
+
     try {
       await entrar({ email, senha })
       navigate('/')
@@ -5452,7 +5474,9 @@ export default function Login() {
       const detalhe = err.response?.data?.detail
       setErro(typeof detalhe === 'string' ? detalhe : 'Não foi possível entrar. Confira e-mail e senha.')
     } finally {
+      clearTimeout(timer)
       setEnviando(false)
+      setDemorando(false)
     }
   }
 
@@ -5504,12 +5528,19 @@ export default function Login() {
               </p>
             )}
 
+            {demorando && (
+              <p className="text-xs text-charcoal-soft bg-sand-dark/40 rounded-lg px-3 py-2">
+                O servidor estava "dormindo" (economia de recursos) e está acordando agora —
+                pode levar até 1 minuto na primeira vez, aguenta aí...
+              </p>
+            )}
+
             <button
               type="submit"
               disabled={enviando}
               className="w-full bg-ink hover:bg-ink-light transition-colors text-white font-medium rounded-lg py-2.5 text-sm disabled:opacity-60"
             >
-              {enviando ? 'Entrando...' : 'Entrar'}
+              {enviando ? (demorando ? 'Acordando o servidor...' : 'Entrando...') : 'Entrar'}
             </button>
           </form>
         </div>
@@ -5540,12 +5571,19 @@ export default function Register() {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [demorando, setDemorando] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (enviando) return // guarda extra contra duplo clique antes do botão desabilitar de vez
     setErro('')
     setEnviando(true)
+    setDemorando(false)
+
+    // Se passar de alguns segundos, provavelmente é o servidor "acordando"
+    // (plano gratuito de hospedagem) — avisa em vez de deixar parecer travado.
+    const timer = setTimeout(() => setDemorando(true), 4000)
+
     try {
       await registrar({ nome, email, senha })
       navigate('/')
@@ -5560,7 +5598,9 @@ export default function Register() {
         setErro('Não foi possível criar a conta.')
       }
     } finally {
+      clearTimeout(timer)
       setEnviando(false)
+      setDemorando(false)
     }
   }
 
@@ -5629,12 +5669,19 @@ export default function Register() {
               </p>
             )}
 
+            {demorando && (
+              <p className="text-xs text-charcoal-soft bg-sand-dark/40 rounded-lg px-3 py-2">
+                O servidor estava "dormindo" (economia de recursos) e está acordando agora —
+                pode levar até 1 minuto na primeira vez, aguenta aí...
+              </p>
+            )}
+
             <button
               type="submit"
               disabled={enviando}
               className="w-full bg-coral hover:opacity-90 transition-opacity text-white font-medium rounded-lg py-2.5 text-sm disabled:opacity-60"
             >
-              {enviando ? 'Criando conta...' : 'Criar conta'}
+              {enviando ? (demorando ? 'Acordando o servidor...' : 'Criando conta...') : 'Criar conta'}
             </button>
           </form>
         </div>

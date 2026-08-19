@@ -4,6 +4,7 @@ Regras de negócio de autenticação, separadas dos endpoints (routers).
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -38,7 +39,21 @@ def create_user(db: Session, dados: UserCreate) -> User:
         nivel_atual_id=primeiro_nivel.id if primeiro_nivel else None,
     )
     db.add(usuario)
-    db.commit()
+
+    try:
+        db.commit()
+    except IntegrityError:
+        # Rede de segurança contra condição de corrida: duas requisições de
+        # registro quase simultâneas com o mesmo e-mail (ex: duplo clique no
+        # botão) passam pela checagem acima antes de qualquer uma commitar.
+        # A primeira grava normal; a segunda esbarra na constraint única do
+        # banco aqui — sem isso, isso vazaria como 500 em vez de 409.
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Já existe uma conta com esse e-mail.",
+        ) from None
+
     db.refresh(usuario)
     return usuario
 
