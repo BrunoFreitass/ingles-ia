@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -13,6 +14,20 @@ import Review from './pages/Review'
 import Speaking from './pages/Speaking'
 
 export default function App() {
+  useEffect(() => {
+    // "Acorda" o backend assim que o site carrega, antes mesmo da pessoa
+    // fazer login — em produção, o Render (plano free) coloca o servidor
+    // pra dormir depois de um tempo sem uso, e a primeira requisição real
+    // demoraria 30-50s. Disparando isso cedo (sem esperar resposta), o
+    // servidor já está acordando enquanto a pessoa lê a tela de login.
+    const apiUrl = import.meta.env.VITE_API_URL || ''
+    fetch(`${apiUrl}/`).catch(() => {
+      // Silencioso de propósito: isso é só um "toque" pra acordar o
+      // servidor, falha aqui não deve incomodar o usuário nem aparecer
+      // como erro em lugar nenhum da tela.
+    })
+  }, [])
+
   return (
     <BrowserRouter>
       <AuthProvider>

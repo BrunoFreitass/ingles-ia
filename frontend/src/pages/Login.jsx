@@ -10,12 +10,19 @@ export default function Login() {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [demorando, setDemorando] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (enviando) return // guarda extra contra duplo clique antes do botão desabilitar de vez
     setErro('')
     setEnviando(true)
+    setDemorando(false)
+
+    // Se passar de alguns segundos, provavelmente é o servidor "acordando"
+    // (plano gratuito de hospedagem) — avisa em vez de deixar parecer travado.
+    const timer = setTimeout(() => setDemorando(true), 4000)
+
     try {
       await entrar({ email, senha })
       navigate('/')
@@ -23,7 +30,9 @@ export default function Login() {
       const detalhe = err.response?.data?.detail
       setErro(typeof detalhe === 'string' ? detalhe : 'Não foi possível entrar. Confira e-mail e senha.')
     } finally {
+      clearTimeout(timer)
       setEnviando(false)
+      setDemorando(false)
     }
   }
 
@@ -75,12 +84,19 @@ export default function Login() {
               </p>
             )}
 
+            {demorando && (
+              <p className="text-xs text-charcoal-soft bg-sand-dark/40 rounded-lg px-3 py-2">
+                O servidor estava "dormindo" (economia de recursos) e está acordando agora —
+                pode levar até 1 minuto na primeira vez, aguenta aí...
+              </p>
+            )}
+
             <button
               type="submit"
               disabled={enviando}
               className="w-full bg-ink hover:bg-ink-light transition-colors text-white font-medium rounded-lg py-2.5 text-sm disabled:opacity-60"
             >
-              {enviando ? 'Entrando...' : 'Entrar'}
+              {enviando ? (demorando ? 'Acordando o servidor...' : 'Entrando...') : 'Entrar'}
             </button>
           </form>
         </div>

@@ -11,12 +11,19 @@ export default function Register() {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [demorando, setDemorando] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (enviando) return // guarda extra contra duplo clique antes do botão desabilitar de vez
     setErro('')
     setEnviando(true)
+    setDemorando(false)
+
+    // Se passar de alguns segundos, provavelmente é o servidor "acordando"
+    // (plano gratuito de hospedagem) — avisa em vez de deixar parecer travado.
+    const timer = setTimeout(() => setDemorando(true), 4000)
+
     try {
       await registrar({ nome, email, senha })
       navigate('/')
@@ -31,7 +38,9 @@ export default function Register() {
         setErro('Não foi possível criar a conta.')
       }
     } finally {
+      clearTimeout(timer)
       setEnviando(false)
+      setDemorando(false)
     }
   }
 
@@ -100,12 +109,19 @@ export default function Register() {
               </p>
             )}
 
+            {demorando && (
+              <p className="text-xs text-charcoal-soft bg-sand-dark/40 rounded-lg px-3 py-2">
+                O servidor estava "dormindo" (economia de recursos) e está acordando agora —
+                pode levar até 1 minuto na primeira vez, aguenta aí...
+              </p>
+            )}
+
             <button
               type="submit"
               disabled={enviando}
               className="w-full bg-coral hover:opacity-90 transition-opacity text-white font-medium rounded-lg py-2.5 text-sm disabled:opacity-60"
             >
-              {enviando ? 'Criando conta...' : 'Criar conta'}
+              {enviando ? (demorando ? 'Acordando o servidor...' : 'Criando conta...') : 'Criar conta'}
             </button>
           </form>
         </div>
