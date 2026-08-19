@@ -13,6 +13,7 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (enviando) return // guarda extra contra duplo clique antes do botão desabilitar de vez
     setErro('')
     setEnviando(true)
     try {
