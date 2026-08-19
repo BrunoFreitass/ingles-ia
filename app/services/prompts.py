@@ -145,3 +145,39 @@ compreensão em inglês.
 Responda APENAS com um JSON no formato:
 {{"texto_pt": "..."}}
 """
+
+
+def prompt_prova_final(capitulo, licoes: list) -> str:
+    """
+    Prova final de um capítulo: revisa o conteúdo de TODAS as lições dos
+    níveis desse capítulo, misturando os temas em vez de focar em um só.
+    """
+    resumo_licoes = "\n\n".join(
+        f"--- {licao.titulo} ({licao.tema}) ---\n{licao.texto_gramatica}"
+        for licao in licoes
+    )
+
+    return f"""Você é um professor de inglês criando a PROVA FINAL do capítulo
+"{capitulo.nome}" para um aluno brasileiro. Essa prova revisa TUDO que foi
+estudado nos níveis desse capítulo — não é sobre um tema só, é uma mistura.
+
+Conteúdo estudado no capítulo (resumo de cada nível):
+{resumo_licoes}
+
+Tarefa: crie exatamente 15 perguntas de múltipla escolha, misturando os
+diferentes temas/tempos verbais estudados ao longo do capítulo (não
+concentre todas as perguntas em um único nível — distribua entre os
+temas). Cada pergunta com 4 alternativas, só uma correta, alternativas
+erradas plausíveis (erros comuns de quem está aprendendo).
+
+Responda APENAS com um JSON no formato:
+{{"perguntas": [
+  {{
+    "pergunta": "...",
+    "opcoes": ["...", "...", "...", "..."],
+    "resposta_correta": "..."
+  }}
+]}}
+
+O campo "resposta_correta" deve ser IDÊNTICO a uma das strings em "opcoes".
+"""

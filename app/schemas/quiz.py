@@ -30,7 +30,8 @@ class QuizParaResponder(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    lesson_id: int
+    lesson_id: int | None = None
+    capitulo_id: int | None = None
     perguntas: list[QuizQuestionParaResponder]
 
 
@@ -60,3 +61,5 @@ class ResultadoQuiz(BaseModel):
     correcao: list[CorrecaoPergunta]
     nivel_desbloqueado: bool = False
     novo_nivel_nome: str | None = None
+    capitulo_desbloqueado: bool = False
+    novo_capitulo_nome: str | None = None

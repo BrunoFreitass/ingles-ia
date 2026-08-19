@@ -12,6 +12,8 @@ import Conversation from './pages/Conversation'
 import Immersion from './pages/Immersion'
 import Review from './pages/Review'
 import Speaking from './pages/Speaking'
+import ProvaFinal from './pages/ProvaFinal'
+import Ranking from './pages/Ranking'
 
 export default function App() {
   useEffect(() => {
@@ -95,6 +97,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Review />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/capitulos/:capituloId/prova-final"
+            element={
+              <ProtectedRoute>
+                <ProvaFinal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ranking"
+            element={
+              <ProtectedRoute>
+                <Ranking />
               </ProtectedRoute>
             }
           />

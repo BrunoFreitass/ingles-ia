@@ -139,6 +139,22 @@ der erro de rede logo de cara, abra o DevTools (F12) → aba **Network** e
 confira se as chamadas estão indo pra URL certa do backend (não pra
 `localhost` nem pra `/api` puro).
 
+## 7. Popular os capítulos/níveis/prova final em produção
+
+O `alembic upgrade head` do build já cria as tabelas, mas **não popula
+conteúdo** — isso é um passo manual, igual fizemos com `scripts/seed.py`.
+Rode local, apontando pra External Database URL do Postgres de produção:
+
+```powershell
+pip install -r requirements-postgres.txt
+$env:DATABASE_URL = "cole aqui a External Database URL do Render"
+python scripts/seed.py                      # se ainda não rodou antes
+python scripts/seed_capitulo1_niveis_3_a_10.py
+```
+
+Ambos os scripts são seguros pra rodar mais de uma vez (não duplicam nada
+se já existir).
+
 ## Erros comuns
 
 **"Failed to fetch" ou erro de CORS no console** — confira se `CORS_ORIGINS`
@@ -155,3 +171,11 @@ no Render; se precisar rodar manualmente, use o **Shell** do Render
 
 **Flashcards/quiz/conversa dão 503** — confira se `GEMINI_API_KEYS` está
 configurada corretamente nas variáveis de ambiente do Render.
+
+**Build falha com erro de `pydantic-core` / `maturin` / `Read-only file
+system` durante a instalação** — o Render está usando uma versão do Python
+mais nova do que os pacotes suportam (mesmo problema que pode acontecer
+localmente com Python 3.14). O repositório já inclui um arquivo
+`.python-version` fixando 3.12, mas se o Render ainda assim usar outra
+versão, force manualmente: no serviço → **Environment** → adicione
+`PYTHON_VERSION` = `3.12.8` → redeploy.

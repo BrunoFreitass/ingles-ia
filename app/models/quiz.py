@@ -7,12 +7,21 @@ from app.core.database import Base
 
 
 class Quiz(Base):
+    """
+    Um Quiz é ou o quiz normal de uma lição (lesson_id preenchido, 10
+    perguntas), ou a prova final de um capítulo (capitulo_id preenchido,
+    cobre o conteúdo de todos os níveis do capítulo). Exatamente um dos
+    dois deve estar preenchido.
+    """
+
     __tablename__ = "quizzes"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    lesson_id: Mapped[int] = mapped_column(ForeignKey("lessons.id"), nullable=False, unique=True)
+    lesson_id: Mapped[int | None] = mapped_column(ForeignKey("lessons.id"), nullable=True, unique=True)
+    capitulo_id: Mapped[int | None] = mapped_column(ForeignKey("capitulos.id"), nullable=True, unique=True)
 
     lesson = relationship("Lesson")
+    capitulo = relationship("Capitulo")
     perguntas = relationship("QuizQuestion", back_populates="quiz")
 
 

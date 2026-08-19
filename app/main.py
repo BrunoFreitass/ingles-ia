@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.routers import auth, conversation, flashcard_review, flashcards, immersion, levels, quiz, users
+from app.routers import auth, capitulos, conversation, flashcard_review, flashcards, immersion, levels, quiz, ranking, users
 
 # Garante que todos os modelos foram importados antes do create_all
 import app.models  # noqa: F401
@@ -31,6 +31,8 @@ app.include_router(quiz.router)
 app.include_router(conversation.router)
 app.include_router(immersion.router)
 app.include_router(flashcard_review.router)
+app.include_router(capitulos.router)
+app.include_router(ranking.router)
 
 
 @app.get("/")

@@ -12,6 +12,9 @@ export default function Header() {
           <Brand />
         </Link>
         <div className="flex items-center gap-4">
+          <Link to="/ranking" className="text-sm font-medium text-ink hidden sm:inline hover:underline">
+            🏆 Ranking
+          </Link>
           <Link to="/revisao" className="text-sm font-medium text-ink hidden sm:inline hover:underline">
             Revisão
           </Link>

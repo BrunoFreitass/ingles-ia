@@ -9,6 +9,10 @@ testadas — falta só o deploy em produção.
 ## Estrutura
 
 ```
+.python-version  trava a versão do Python em 3.12 — evita quebrar o build em
+                  hospedagens que usam uma versão mais nova por padrão (ex:
+                  Render), mesmo bug do pydantic-core/bcrypt visto localmente
+                  com Python 3.14
 app/
   core/        configurações, banco de dados, segurança (hash + JWT)
   models/      tabelas do banco (SQLAlchemy)

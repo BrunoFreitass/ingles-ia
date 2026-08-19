@@ -10,10 +10,10 @@ import json
 from sqlalchemy.orm import Session
 
 from app.models.flashcard import Flashcard
-from app.models.level import Lesson
+from app.models.level import Capitulo, Lesson, Level
 from app.models.quiz import Quiz, QuizQuestion
 from app.services.gemini_client import GeminiIndisponivelError, gemini_client
-from app.services.prompts import prompt_flashcards, prompt_quiz
+from app.services.prompts import prompt_flashcards, prompt_prova_final, prompt_quiz
 
 
 def obter_ou_gerar_flashcards(db: Session, lesson: Lesson) -> list[Flashcard]:
@@ -64,6 +64,45 @@ def obter_ou_gerar_quiz(db: Session, lesson: Lesson) -> Quiz:
     quiz = Quiz(lesson_id=lesson.id)
     db.add(quiz)
     db.flush()  # garante quiz.id sem precisar commitar ainda
+
+    for item in perguntas_geradas:
+        db.add(
+            QuizQuestion(
+                quiz_id=quiz.id,
+                pergunta=item["pergunta"],
+                opcoes_json=json.dumps(item["opcoes"], ensure_ascii=False),
+                resposta_correta=item["resposta_correta"],
+            )
+        )
+
+    db.commit()
+    db.refresh(quiz)
+    return quiz
+
+
+def obter_ou_gerar_prova_final(db: Session, capitulo: Capitulo) -> Quiz:
+    """Retorna a prova final do capítulo, gerando via IA na primeira vez (15 perguntas)."""
+    existente = db.query(Quiz).filter(Quiz.capitulo_id == capitulo.id).first()
+    if existente:
+        return existente
+
+    niveis = db.query(Level).filter(Level.capitulo_id == capitulo.id).order_by(Level.ordem).all()
+    licoes = [licao for nivel in niveis for licao in nivel.lessons]
+
+    if not licoes:
+        raise GeminiIndisponivelError("Este capítulo ainda não tem lições com conteúdo pra revisar.")
+
+    dados = gemini_client.generate_json(prompt_prova_final(capitulo, licoes))
+    perguntas_geradas = dados.get("perguntas", [])
+
+    if len(perguntas_geradas) < 8:
+        raise GeminiIndisponivelError(
+            f"O Gemini gerou apenas {len(perguntas_geradas)} perguntas pra prova final (esperado ~15)."
+        )
+
+    quiz = Quiz(capitulo_id=capitulo.id)
+    db.add(quiz)
+    db.flush()
 
     for item in perguntas_geradas:
         db.add(

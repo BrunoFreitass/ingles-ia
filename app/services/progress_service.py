@@ -13,7 +13,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.level import Lesson, Level
+from app.models.level import Capitulo, Lesson, Level
 from app.models.quiz import Quiz, QuizAttempt
 from app.models.user import User
 
@@ -83,18 +83,77 @@ def verificar_e_avancar_nivel(db: Session, user: User, level: Level) -> Level | 
     """
     Chamado após o usuário enviar um quiz. Se o nível dessa lição ficou
     completo (todas as lições aprovadas) e existe um próximo nível ainda
-    não desbloqueado, avança o usuário e retorna o novo nível. Senão,
-    retorna None.
+    não desbloqueado NO MESMO CAPÍTULO, avança o usuário e retorna o novo
+    nível. Se o próximo nível pertence a outro capítulo, não avança
+    automaticamente — o usuário precisa passar na prova final do capítulo
+    atual primeiro (ver verificar_e_avancar_capitulo).
     """
     if not nivel_esta_completo(db, user, level):
         return None
 
     proximo_nivel = db.query(Level).filter(Level.ordem == level.ordem + 1).first()
     if not proximo_nivel:
-        return None  # já é o último nível
+        return None  # já é o último nível do sistema
+
+    if level.capitulo_id and proximo_nivel.capitulo_id != level.capitulo_id:
+        return None  # fronteira de capítulo — precisa da prova final
 
     if proximo_nivel.ordem <= ordem_do_nivel_do_usuario(db, user):
         return None  # já estava desbloqueado, não é novidade
+
+    user.nivel_atual_id = proximo_nivel.id
+    db.commit()
+    return proximo_nivel
+
+
+def capitulo_esta_completo(db: Session, user: User, capitulo: Capitulo) -> bool:
+    """True se o usuário completou (aprovou) TODOS os níveis desse capítulo."""
+    niveis = db.query(Level).filter(Level.capitulo_id == capitulo.id).all()
+    if not niveis:
+        return False
+    return all(nivel_esta_completo(db, user, nivel) for nivel in niveis)
+
+
+def usuario_ja_passou_prova_final(db: Session, user: User, capitulo: Capitulo) -> bool:
+    quiz = db.query(Quiz).filter(Quiz.capitulo_id == capitulo.id).first()
+    if not quiz:
+        return False
+    melhor_nota = (
+        db.query(func.max(QuizAttempt.nota))
+        .filter(QuizAttempt.quiz_id == quiz.id, QuizAttempt.user_id == user.id)
+        .scalar()
+    )
+    return melhor_nota is not None and melhor_nota >= capitulo.nota_minima_prova_final
+
+
+def garantir_acesso_prova_final(db: Session, user: User, capitulo: Capitulo) -> None:
+    """403 se o usuário ainda não completou todos os níveis do capítulo."""
+    if not capitulo_esta_completo(db, user, capitulo):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Complete todos os níveis do capítulo '{capitulo.nome}' antes de fazer a prova final.",
+        )
+
+
+def verificar_e_avancar_capitulo(db: Session, user: User, capitulo: Capitulo) -> Level | None:
+    """
+    Chamado após o usuário enviar a prova final de um capítulo. Se passou
+    (nota >= nota_minima_prova_final), libera o primeiro nível do próximo
+    capítulo e retorna esse nível. Senão, retorna None.
+    """
+    if not usuario_ja_passou_prova_final(db, user, capitulo):
+        return None
+
+    ultimo_nivel = max(capitulo.niveis, key=lambda n: n.ordem, default=None)
+    if not ultimo_nivel:
+        return None
+
+    proximo_nivel = db.query(Level).filter(Level.ordem == ultimo_nivel.ordem + 1).first()
+    if not proximo_nivel:
+        return None  # já é o último capítulo do sistema
+
+    if proximo_nivel.ordem <= ordem_do_nivel_do_usuario(db, user):
+        return None  # já estava desbloqueado
 
     user.nivel_atual_id = proximo_nivel.id
     db.commit()

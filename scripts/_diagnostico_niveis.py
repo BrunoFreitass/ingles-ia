@@ -9,8 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.core.database import SessionLocal
-from app.models.level import Lesson, Level
+from app.core.database import SessionLocal  # noqa: E402
+from app.models.level import Lesson, Level  # noqa: E402
 
 db = SessionLocal()
 
