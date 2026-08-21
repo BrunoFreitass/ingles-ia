@@ -27,6 +27,7 @@ class ConversationMessage(Base):
     session_id: Mapped[int] = mapped_column(ForeignKey("conversation_sessions.id"), nullable=False)
     autor: Mapped[str] = mapped_column(String(20), nullable=False)  # "usuario" | "ia"
     texto: Mapped[str] = mapped_column(Text, nullable=False)
+    texto_pt: Mapped[str | None] = mapped_column(Text, nullable=True)  # tradução — só preenchido pra autor="ia"
     erro_corrigido: Mapped[str | None] = mapped_column(Text, nullable=True)
     criado_em: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 

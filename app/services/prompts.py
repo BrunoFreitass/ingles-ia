@@ -100,6 +100,9 @@ Regras:
   ou vocabulário, aponte isso no campo "erro_corrigido": explique em português, de forma
   breve e encorajadora, qual foi o erro e a forma correta. Se não houver erro perceptível
   ou for a primeira mensagem, deixe "erro_corrigido" como null.
+- Inclua também a tradução da SUA resposta (a que você escreveu em inglês) para português do
+  Brasil, no campo "resposta_pt" — é essencial pra alunos iniciantes que ainda não conseguem
+  ler inglês sozinhos. A tradução deve ser natural, não literal palavra por palavra.
 
 Histórico da conversa até agora:
 {linhas_historico if linhas_historico else "(nenhuma mensagem ainda)"}
@@ -107,7 +110,8 @@ Histórico da conversa até agora:
 {instrucao}
 
 Responda APENAS com um JSON no formato:
-{{"resposta": "sua resposta em inglês aqui", "erro_corrigido": "explicação em português do erro, ou null"}}
+{{"resposta": "sua resposta em inglês aqui", "resposta_pt": "a tradução dessa resposta em português",
+  "erro_corrigido": "explicação em português do erro, ou null"}}
 """
 
 
@@ -144,6 +148,125 @@ compreensão em inglês.
 
 Responda APENAS com um JSON no formato:
 {{"texto_pt": "..."}}
+"""
+
+
+_DESCRICAO_TIPO_EXERCICIO = {
+    "imagem_palavra": (
+        'Mostra um emoji representando um objeto/coisa e o aluno escolhe a palavra certa. '
+        'dados: {"imagem_emoji": "📱", "opcoes": ["book", "phone", "table", "chair"]}. '
+        'resposta_correta: a string da opção certa (ex: "phone").'
+    ),
+    "palavra_imagem": (
+        'Mostra uma palavra em inglês e o aluno escolhe o emoji certo entre 4 opções. '
+        'dados: {"palavra": "phone", "opcoes_emoji": ["📖", "📱", "🪑", "🚪"]}. '
+        'resposta_correta: a string do emoji certo (ex: "📱").'
+    ),
+    "ligar": (
+        'O aluno liga cada palavra ao emoji correspondente (3 ou 4 pares). '
+        'dados: {"palavras": ["book", "phone", "chair"], "emojis_embaralhados": ["🪑", "📱", "📖"]}. '
+        'resposta_correta: objeto mapeando cada palavra ao emoji certo, ex: '
+        '{"book": "📖", "phone": "📱", "chair": "🪑"}.'
+    ),
+    "completar": (
+        'Frase com uma lacuna "___" e 4 opções pra completar. '
+        'dados: {"frase": "This is a ___.", "opcoes": ["phone", "blue", "run", "yesterday"]}. '
+        'resposta_correta: a string da opção certa (ex: "phone").'
+    ),
+    "organizar_frase": (
+        'Palavras embaralhadas que o aluno organiza pra formar a frase correta. '
+        'dados: {"palavras_embaralhadas": ["is", "This", "a", "phone"]}. '
+        'resposta_correta: a frase correta como string (ex: "This is a phone.").'
+    ),
+    "escolha_multipla": (
+        'Pergunta com 4 alternativas, só uma correta (alternativas erradas plausíveis, '
+        'erros comuns de quem está aprendendo). '
+        'dados: {"pergunta": "What is this?", "opcoes": ["It\'s a phone.", "I\'m a phone.", '
+        '"It are phone.", "Phone yesterday."]}. resposta_correta: a string da opção certa.'
+    ),
+    "ouvir_escolher": (
+        'Uma frase curta que o aluno vai OUVIR (via texto-pra-voz no frontend) e depois escolhe '
+        'a opção que corresponde ao que ouviu. '
+        'dados: {"texto_audio": "This is my phone.", "opcoes": ["This is my phone.", '
+        '"This is my phony.", "This is my food.", "This is my form."]}. '
+        'resposta_correta: a string da opção certa.'
+    ),
+    "interpretacao": (
+        'Um texto curto (2-4 frases) seguido de uma pergunta de compreensão com 4 alternativas. '
+        'dados: {"texto": "John works at a hospital. He is a doctor.", '
+        '"pergunta": "Where does John work?", "opcoes": ["School", "Hospital", "Restaurant", "Bank"]}. '
+        'resposta_correta: a string da opção certa.'
+    ),
+    "producao": (
+        'Produção livre — o aluno escreve uma resposta aberta, sem gabarito fixo (é só prática, '
+        'não é corrigido automaticamente). '
+        'dados: {"prompt": "Tell me about your daily routine."}. resposta_correta: null.'
+    ),
+}
+
+
+def prompt_exercicios(
+    lesson,
+    tipos_permitidos: list[str],
+    vocabulario_reforco: list[str],
+    nivel_dificuldade: str,
+) -> str:
+    """
+    Gera até 10 exercícios de prática variados pra uma lição, restritos aos
+    `tipos_permitidos` (a variedade de tipos cresce conforme a trilha avança
+    — ver content_generation_service.py) e reforçando, quando possível,
+    palavras de `vocabulario_reforco` (vocabulário já ensinado em capítulos
+    anteriores da mesma trilha, pra criar a progressão em que palavras
+    antigas voltam em frases mais complexas).
+    """
+    exemplos_texto = "\n".join(f"- {e.frase_en} ({e.frase_pt})" for e in lesson.exemplos)
+    tipos_descricao = "\n".join(f'- "{t}": {_DESCRICAO_TIPO_EXERCICIO[t]}' for t in tipos_permitidos)
+    reforco_texto = (
+        ", ".join(vocabulario_reforco)
+        if vocabulario_reforco
+        else "(nenhum ainda — este é um dos primeiros capítulos)"
+    )
+
+    return f"""Você é um professor de inglês criando exercícios de PRÁTICA (não é a prova, é o
+treino antes dela) para um aluno brasileiro, nível de dificuldade: {nivel_dificuldade}.
+
+Contexto da lição:
+Título: {lesson.titulo}
+Tema: {lesson.tema}
+Gramática ensinada: {lesson.texto_gramatica}
+Frases de exemplo da lição:
+{exemplos_texto}
+
+Vocabulário de capítulos anteriores pra reforçar quando fizer sentido (não é obrigatório usar
+todas, mas aproveite quando encaixar naturalmente, misturado ao vocabulário novo desta lição):
+{reforco_texto}
+
+Tarefa: crie exatamente 10 exercícios, usando SOMENTE os tipos abaixo (pode repetir tipos,
+mas varie ao longo dos 10 — não use o mesmo tipo mais de 3 vezes seguidas):
+
+{tipos_descricao}
+
+REGRA CRÍTICA sobre emojis (campos "imagem_emoji", "opcoes_emoji", "emojis_embaralhados"):
+use SEMPRE um emoji Unicode de verdade (ex: 📱🪑📖🚪), NUNCA texto, palavra ou letras de
+qualquer idioma/alfabeto no lugar do emoji. Nem toda palavra tem um emoji perfeito — nesses
+casos, escolha o emoji mais parecido visualmente em vez de inventar um símbolo ou escrever a
+palavra. Exemplos de aproximação aceitável: "table" → 🍽️ (ou 🛋️), "bag" → 🎒 (ou 💼), "pencil"
+→ ✏️, "pen" → 🖊️, "window" → 🪟, "door" → 🚪, "computer" → 💻, "chair" → 🪑, "book" → 📖,
+"phone" → 📱. Se realmente não houver nenhum emoji razoável pra uma palavra do vocabulário
+desta lição, NÃO use os tipos "imagem_palavra", "palavra_imagem" ou "ligar" pra essa palavra —
+use outro tipo (ex: "completar" ou "escolha_multipla") no lugar.
+
+Para cada exercício, retorne:
+- "tipo": um dos tipos listados acima, exatamente como escrito
+- "enunciado": uma instrução curta em português pro aluno (ex: "Escolha a palavra certa")
+- "dados": o objeto conforme o formato descrito pra esse tipo (SEM revelar a resposta certa)
+- "resposta_correta": a resposta certa conforme o formato descrito pra esse tipo (string, objeto,
+  ou null pra "producao")
+
+Responda APENAS com um JSON no formato:
+{{"exercicios": [
+  {{"tipo": "...", "enunciado": "...", "dados": {{...}}, "resposta_correta": ...}}
+]}}
 """
 
 

@@ -74,4 +74,6 @@ def obter_licao(
         .filter(Lesson.id == lesson_id, Lesson.level_id == level_id)
         .first()
     )
-    return LessonOut.from_orm_model(licao)
+    # Personaliza o conteúdo com o primeiro nome de quem está logado (ex:
+    # frases de exemplo tipo "Hi, I'm {nome}" usam o placeholder '{nome}').
+    return LessonOut.from_orm_model(licao, usuario_atual.nome)

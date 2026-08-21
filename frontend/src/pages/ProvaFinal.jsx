@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { obterProvaFinal, submeterProvaFinal } from '../api/capitulos'
 import Header from '../components/Header'
@@ -10,6 +10,7 @@ export default function ProvaFinal() {
   const [respostas, setRespostas] = useState({})
   const [resultado, setResultado] = useState(null)
   const [enviando, setEnviando] = useState(false)
+  const resultadoRef = useRef(null)
 
   useEffect(() => {
     obterProvaFinal(capituloId)
@@ -24,6 +25,15 @@ export default function ProvaFinal() {
     if (resultado) return
     setRespostas((r) => ({ ...r, [perguntaId]: opcao }))
   }
+
+  // Mesmo motivo do Quiz de nível: o botão de enviar fica no fim da página,
+  // então sem isso o aluno não vê o resultado (aprovado/reprovado, capítulo
+  // desbloqueado) sem rolar manualmente pra cima.
+  useEffect(() => {
+    if (resultado) {
+      resultadoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [resultado])
 
   async function handleSubmit() {
     setEnviando(true)
@@ -77,7 +87,8 @@ export default function ProvaFinal() {
 
         {resultado && (
           <div
-            className={`rounded-2xl border p-6 mb-8 text-center ${
+            ref={resultadoRef}
+            className={`rounded-2xl border p-6 mb-8 text-center scroll-mt-6 ${
               aprovado ? 'bg-leaf/5 border-leaf/30' : 'bg-coral/5 border-coral/30'
             }`}
           >
@@ -97,6 +108,22 @@ export default function ProvaFinal() {
                 Nota mínima é 7.0 — revise os níveis e tente de novo quando quiser.
               </p>
             )}
+          </div>
+        )}
+
+        {resultado?.capitulo_desbloqueado && (
+          <div className="bg-leaf/10 border border-leaf/30 rounded-2xl p-6 mb-8 text-center">
+            <p className="font-display text-lg font-semibold text-leaf">🎉 Trilha desbloqueada!</p>
+            <p className="text-sm text-charcoal mt-1">
+              {resultado.novo_capitulo_nome
+                ? (
+                  <>Você concluiu esta trilha e liberou <span className="font-medium">{resultado.novo_capitulo_nome}</span>.</>
+                )
+                : 'Você concluiu esta trilha! A próxima ainda está sendo preparada.'}
+            </p>
+            <Link to="/" className="inline-block mt-3 text-sm font-medium text-leaf hover:underline">
+              Ver na trilha →
+            </Link>
           </div>
         )}
 

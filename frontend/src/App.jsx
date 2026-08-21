@@ -14,6 +14,8 @@ import Review from './pages/Review'
 import Speaking from './pages/Speaking'
 import ProvaFinal from './pages/ProvaFinal'
 import Ranking from './pages/Ranking'
+import Profile from './pages/Profile'
+import ProfileEdit from './pages/ProfileEdit'
 
 export default function App() {
   useEffect(() => {
@@ -113,6 +115,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Ranking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/perfil/editar"
+            element={
+              <ProtectedRoute>
+                <ProfileEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/perfil/:userId"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

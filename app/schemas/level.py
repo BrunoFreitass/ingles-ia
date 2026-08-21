@@ -3,6 +3,19 @@ import json
 from pydantic import BaseModel, ConfigDict, field_validator
 
 
+def _personalizar(texto: str | None, primeiro_nome: str | None) -> str | None:
+    """
+    Substitui o placeholder '{nome}' pelo primeiro nome do usuário logado.
+    Lições podem usar '{nome}' em frases de exemplo/gramática (ex: "Hi, I'm
+    {nome}") pra soarem personalizadas em vez de sempre citar um nome fixo.
+    Se por algum motivo não houver usuário (ou o texto não tiver o
+    placeholder), retorna o texto original sem alteração.
+    """
+    if texto is None or not primeiro_nome:
+        return texto
+    return texto.replace("{nome}", primeiro_nome)
+
+
 class LessonExampleOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -48,18 +61,39 @@ class LessonOut(BaseModel):
         return v
 
     @classmethod
-    def from_orm_model(cls, lesson):
-        """Monta o schema a partir do model, mapeando erros_comuns_json -> erros_comuns."""
+    def from_orm_model(cls, lesson, nome_usuario: str | None = None):
+        """
+        Monta o schema a partir do model, mapeando erros_comuns_json -> erros_comuns.
+
+        `nome_usuario` é o nome completo do usuário logado (opcional). Quando
+        informado, usamos só o primeiro nome pra personalizar qualquer trecho
+        do conteúdo que use o placeholder '{nome}' (ex: frases de exemplo tipo
+        "Hi, I'm {nome}"), em vez de sempre mostrar um nome fixo pra todo mundo.
+        """
+        primeiro_nome = nome_usuario.split(" ")[0] if nome_usuario else None
+
+        erros_comuns = lesson.erros_comuns_json
+        if isinstance(erros_comuns, str):
+            erros_comuns = json.loads(erros_comuns)
+        erros_comuns = [_personalizar(e, primeiro_nome) for e in (erros_comuns or [])]
+
         return cls(
             id=lesson.id,
             level_id=lesson.level_id,
             titulo=lesson.titulo,
             tema=lesson.tema,
-            texto_gramatica=lesson.texto_gramatica,
-            erros_comuns=lesson.erros_comuns_json,
+            texto_gramatica=_personalizar(lesson.texto_gramatica, primeiro_nome),
+            erros_comuns=erros_comuns,
             audio_url=lesson.audio_url,
             ordem=lesson.ordem,
-            exemplos=[LessonExampleOut.model_validate(e) for e in lesson.exemplos],
+            exemplos=[
+                LessonExampleOut(
+                    id=e.id,
+                    frase_en=_personalizar(e.frase_en, primeiro_nome),
+                    frase_pt=_personalizar(e.frase_pt, primeiro_nome),
+                )
+                for e in lesson.exemplos
+            ],
         )
 
 

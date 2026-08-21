@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { obterQuiz, submeterQuiz } from '../api/quiz'
 import Header from '../components/Header'
@@ -10,6 +10,7 @@ export default function Quiz() {
   const [respostas, setRespostas] = useState({}) // { [pergunta_id]: opcao_selecionada }
   const [resultado, setResultado] = useState(null)
   const [enviando, setEnviando] = useState(false)
+  const resultadoRef = useRef(null)
 
   useEffect(() => {
     obterQuiz(levelId, lessonId)
@@ -24,6 +25,16 @@ export default function Quiz() {
     if (resultado) return // já enviado, não deixa mudar
     setRespostas((r) => ({ ...r, [perguntaId]: opcao }))
   }
+
+  // Assim que o resultado chega, rola a tela pra ele automaticamente — o botão
+  // "Enviar respostas" fica no fim da página (depois da pergunta 10), então sem
+  // isso o usuário não vê a nota nem o aviso de nível/trilha desbloqueada sem
+  // subir manualmente a página.
+  useEffect(() => {
+    if (resultado) {
+      resultadoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [resultado])
 
   async function handleSubmit() {
     setEnviando(true)
@@ -80,7 +91,7 @@ export default function Quiz() {
         )}
 
         {resultado && (
-          <div className="bg-white border border-sand-dark rounded-2xl p-6 mb-8 text-center">
+          <div ref={resultadoRef} className="bg-white border border-sand-dark rounded-2xl p-6 mb-8 text-center scroll-mt-6">
             <p className="font-mono text-xs text-charcoal-soft uppercase mb-1">Sua nota</p>
             <p className="font-display text-5xl font-semibold text-ink">
               {resultado.nota.toFixed(1)}
@@ -101,6 +112,24 @@ export default function Quiz() {
             </p>
             <Link to="/" className="inline-block mt-3 text-sm font-medium text-leaf hover:underline">
               Ver na trilha →
+            </Link>
+          </div>
+        )}
+
+        {resultado?.prova_final_disponivel && (
+          <div className="bg-coral/10 border border-coral/30 rounded-2xl p-6 mb-8 text-center">
+            <p className="font-display text-lg font-semibold text-coral">
+              🏆 Prova final liberada!
+            </p>
+            <p className="text-sm text-charcoal mt-1">
+              Você completou todos os níveis de <span className="font-medium">{resultado.capitulo_nome}</span> —
+              agora é só fazer a prova final pra concluir a trilha.
+            </p>
+            <Link
+              to={`/capitulos/${resultado.capitulo_id}/prova-final`}
+              className="inline-block mt-3 text-sm font-medium text-white bg-coral rounded-lg px-4 py-2 hover:opacity-90 transition-opacity"
+            >
+              Fazer prova final →
             </Link>
           </div>
         )}

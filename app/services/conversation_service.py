@@ -25,7 +25,11 @@ def iniciar_sessao(db: Session, user: User, lesson: Lesson) -> ConversationSessi
     if not resposta:
         raise GeminiIndisponivelError("O Gemini respondeu sem gerar a mensagem inicial.")
 
-    db.add(ConversationMessage(session_id=sessao.id, autor="ia", texto=resposta, erro_corrigido=None))
+    db.add(
+        ConversationMessage(
+            session_id=sessao.id, autor="ia", texto=resposta, texto_pt=dados.get("resposta_pt"), erro_corrigido=None
+        )
+    )
     db.commit()
     db.refresh(sessao)
     return sessao
@@ -63,6 +67,7 @@ def enviar_mensagem(db: Session, sessao: ConversationSession, texto_usuario: str
         session_id=sessao.id,
         autor="ia",
         texto=resposta,
+        texto_pt=dados.get("resposta_pt"),
         erro_corrigido=erro_corrigido,
     )
     db.add(msg_ia)

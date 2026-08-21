@@ -5,8 +5,10 @@ Importa todos os modelos num único lugar para que:
 """
 
 from app.models.conversation import ConversationMessage, ConversationSession, ImmersionText
+from app.models.exercise import Exercise, ExerciseAttempt
 from app.models.flashcard import Flashcard, UserFlashcardProgress
 from app.models.level import Lesson, LessonExample, Level
+from app.models.profile import PhotoComment, ProfilePhoto, UserProfile
 from app.models.quiz import Quiz, QuizAttempt, QuizQuestion
 from app.models.user import User
 
@@ -17,10 +19,15 @@ __all__ = [
     "LessonExample",
     "Flashcard",
     "UserFlashcardProgress",
+    "Exercise",
+    "ExerciseAttempt",
     "Quiz",
     "QuizQuestion",
     "QuizAttempt",
     "ConversationSession",
     "ConversationMessage",
     "ImmersionText",
+    "UserProfile",
+    "ProfilePhoto",
+    "PhotoComment",
 ]

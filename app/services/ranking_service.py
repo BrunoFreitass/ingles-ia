@@ -8,6 +8,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.level import Level
+from app.models.profile import UserProfile
 from app.models.quiz import QuizAttempt, QuizQuestion
 from app.models.user import User
 from app.schemas.ranking import RankingItem
@@ -16,6 +17,11 @@ from app.services.progress_service import ordem_do_nivel_do_usuario
 
 def calcular_ranking(db: Session, usuario_atual: User) -> list[RankingItem]:
     usuarios = db.query(User).filter(User.ativo.is_(True)).all()
+
+    # Fotos de perfil de todo mundo, buscadas de uma vez (evita 1 query por usuário)
+    fotos_por_user_id = dict(
+        db.query(UserProfile.user_id, UserProfile.foto_perfil_url).all()
+    )
 
     # Quantas perguntas cada quiz tem — evita bater no banco de novo por tentativa.
     total_perguntas_por_quiz = dict(
@@ -41,6 +47,7 @@ def calcular_ranking(db: Session, usuario_atual: User) -> list[RankingItem]:
             {
                 "user_id": usuario.id,
                 "nome": usuario.nome,
+                "foto_perfil_url": fotos_por_user_id.get(usuario.id),
                 "nivel_atual_ordem": ordem_nivel,
                 "nivel_atual_nome": nivel.nome if nivel else "—",
                 "nota_media": round(nota_media, 1),
@@ -55,7 +62,9 @@ def calcular_ranking(db: Session, usuario_atual: User) -> list[RankingItem]:
     return [
         RankingItem(
             posicao=i,
+            user_id=linha["user_id"],
             nome=linha["nome"],
+            foto_perfil_url=linha["foto_perfil_url"],
             nivel_atual_ordem=linha["nivel_atual_ordem"],
             nivel_atual_nome=linha["nivel_atual_nome"],
             nota_media=linha["nota_media"],

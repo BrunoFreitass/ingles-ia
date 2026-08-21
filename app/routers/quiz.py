@@ -8,7 +8,7 @@ from app.schemas.quiz import CorrecaoPergunta, QuizParaResponder, QuizSubmissao,
 from app.services.auth_service import get_current_user
 from app.services.content_generation_service import obter_ou_gerar_quiz
 from app.services.gemini_client import GeminiIndisponivelError
-from app.services.progress_service import buscar_licao_com_acesso, verificar_e_avancar_nivel
+from app.services.progress_service import buscar_licao_com_acesso, capitulo_esta_completo, verificar_e_avancar_nivel
 
 router = APIRouter(prefix="/levels/{level_id}/lessons/{lesson_id}/quiz", tags=["quiz"])
 
@@ -110,6 +110,19 @@ def submeter_respostas(
 
     novo_nivel = verificar_e_avancar_nivel(db, usuario_atual, licao.level)
 
+    # Se esse era o quiz do ÚLTIMO nível da trilha, não há "próximo nível"
+    # pra desbloquear — mas a trilha inteira pode ter ficado completa,
+    # liberando a prova final. Sem avisar isso aqui, o aluno termina o
+    # último nível sem nenhum sinal de que já pode fazer a prova.
+    prova_final_disponivel = False
+    capitulo_id = None
+    capitulo_nome = None
+    capitulo = licao.level.capitulo
+    if capitulo and capitulo_esta_completo(db, usuario_atual, capitulo):
+        prova_final_disponivel = True
+        capitulo_id = capitulo.id
+        capitulo_nome = capitulo.nome
+
     return ResultadoQuiz(
         nota=nota,
         total_perguntas=total,
@@ -117,4 +130,7 @@ def submeter_respostas(
         correcao=correcao,
         nivel_desbloqueado=novo_nivel is not None,
         novo_nivel_nome=novo_nivel.nome if novo_nivel else None,
+        prova_final_disponivel=prova_final_disponivel,
+        capitulo_id=capitulo_id,
+        capitulo_nome=capitulo_nome,
     )

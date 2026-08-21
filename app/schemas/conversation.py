@@ -7,6 +7,7 @@ class ConversationMessageOut(BaseModel):
     id: int
     autor: str  # "usuario" | "ia"
     texto: str
+    texto_pt: str | None = None  # tradução, preenchida só para autor="ia"
     erro_corrigido: str | None
 
 

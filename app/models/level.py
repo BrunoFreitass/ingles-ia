@@ -50,6 +50,7 @@ class Lesson(Base):
 
     level = relationship("Level", back_populates="lessons")
     exemplos = relationship("LessonExample", back_populates="lesson")
+    exercicios = relationship("Exercise", back_populates="lesson", order_by="Exercise.ordem")
 
 
 class LessonExample(Base):

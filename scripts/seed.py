@@ -61,7 +61,10 @@ db.flush()
 
 db.add_all(
     [
-        LessonExample(lesson_id=licao_1_1.id, frase_en="Hi, I'm Bruno. What's your name?", frase_pt="Oi, eu sou o Bruno. Qual é o seu nome?"),
+        # '{nome}' é substituído pelo primeiro nome de quem estiver logado
+        # (ver LessonOut.from_orm_model) — assim a frase soa personalizada
+        # pra cada aluno em vez de sempre citar um nome fixo.
+        LessonExample(lesson_id=licao_1_1.id, frase_en="Hi, I'm {nome}. What's your name?", frase_pt="Oi, eu sou o {nome}. Qual é o seu nome?"),
         LessonExample(lesson_id=licao_1_1.id, frase_en="Nice to meet you!", frase_pt="Prazer em te conhecer!"),
         LessonExample(lesson_id=licao_1_1.id, frase_en="How are you doing today?", frase_pt="Como você está hoje?"),
         LessonExample(lesson_id=licao_1_1.id, frase_en="I'm from Roraima, Brazil.", frase_pt="Eu sou de Roraima, Brasil."),

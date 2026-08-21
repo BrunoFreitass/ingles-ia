@@ -89,6 +89,9 @@ export default function Conversation() {
                   <span className="flex-1">{msg.texto}</span>
                   {msg.autor === 'ia' && <SpeakerButton texto={msg.texto} className="mt-0.5" />}
                 </div>
+                {msg.autor === 'ia' && msg.texto_pt && (
+                  <p className="mt-1 px-1 text-xs text-charcoal-soft italic">{msg.texto_pt}</p>
+                )}
                 {msg.erro_corrigido && (
                   <div className="mt-1.5 bg-coral/10 border border-coral/30 rounded-xl px-3 py-2 text-xs text-charcoal">
                     <span className="text-coral font-medium">Dica de gramática: </span>

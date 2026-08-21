@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { obterRanking } from '../api/ranking'
 import Header from '../components/Header'
 
@@ -28,15 +29,22 @@ export default function Ranking() {
         {ranking && (
           <div className="bg-white border border-sand-dark rounded-2xl overflow-hidden">
             {ranking.map((item) => (
-              <div
+              <Link
+                to={`/perfil/${item.user_id}`}
                 key={item.posicao}
-                className={`flex items-center gap-4 px-5 py-4 border-b border-sand-dark last:border-b-0 ${
+                className={`flex items-center gap-4 px-5 py-4 border-b border-sand-dark last:border-b-0 hover:bg-sand-dark/10 transition-colors ${
                   item.eh_voce ? 'bg-coral/5' : ''
                 }`}
               >
                 <span className="font-mono text-lg text-charcoal-soft w-8 text-center shrink-0">
                   {MEDALHAS[item.posicao] || item.posicao}
                 </span>
+
+                <div className="w-9 h-9 rounded-full bg-sand-dark/40 overflow-hidden shrink-0">
+                  {item.foto_perfil_url && (
+                    <img src={item.foto_perfil_url} alt="" className="w-full h-full object-cover" />
+                  )}
+                </div>
 
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-charcoal truncate">
@@ -53,7 +61,7 @@ export default function Ranking() {
                     {item.total_tentativas} tent. · {item.total_erros} erros
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
 
             {ranking.length === 0 && (

@@ -22,9 +22,12 @@ export default function Header() {
             Motor de imersão
           </Link>
           {usuario && (
-            <span className="text-sm text-charcoal-soft hidden sm:inline">
+            <Link
+              to={`/perfil/${usuario.id}`}
+              className="text-sm text-charcoal-soft hidden sm:inline hover:underline"
+            >
               Olá, <span className="text-charcoal font-medium">{usuario.nome.split(' ')[0]}</span>
-            </span>
+            </Link>
           )}
           <button
             onClick={sair}

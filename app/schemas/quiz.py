@@ -63,3 +63,10 @@ class ResultadoQuiz(BaseModel):
     novo_nivel_nome: str | None = None
     capitulo_desbloqueado: bool = False
     novo_capitulo_nome: str | None = None
+    # Preenchido quando esse quiz era o do ÚLTIMO nível da trilha: não existe
+    # "próximo nível" pra desbloquear, mas a prova final da trilha passa a
+    # estar disponível — sem isso o aluno termina o último nível sem nenhum
+    # aviso de que já pode fazer a prova final.
+    prova_final_disponivel: bool = False
+    capitulo_id: int | None = None
+    capitulo_nome: str | None = None

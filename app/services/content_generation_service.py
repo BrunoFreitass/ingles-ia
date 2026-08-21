@@ -9,11 +9,58 @@ import json
 
 from sqlalchemy.orm import Session
 
+from app.models.exercise import Exercise
 from app.models.flashcard import Flashcard
 from app.models.level import Capitulo, Lesson, Level
 from app.models.quiz import Quiz, QuizQuestion
 from app.services.gemini_client import GeminiIndisponivelError, gemini_client
-from app.services.prompts import prompt_flashcards, prompt_prova_final, prompt_quiz
+from app.services.prompts import prompt_exercicios, prompt_flashcards, prompt_prova_final, prompt_quiz
+
+# Progressão de variedade de tipos de exercício por trilha (Capitulo.ordem).
+# Trilhas iniciais só usam reconhecimento simples; a variedade cresce junto
+# com a dificuldade do conteúdo, terminando em produção livre nas trilhas
+# avançadas. Trilhas além da 10 reaproveitam a última faixa.
+_FAIXAS_TIPOS_POR_TRILHA: list[tuple[int, list[str], str]] = [
+    (2, ["imagem_palavra", "palavra_imagem", "ligar", "completar"], "iniciante absoluto (nível infantil)"),
+    (4, ["imagem_palavra", "palavra_imagem", "ligar", "completar", "organizar_frase", "escolha_multipla"], "básico"),
+    (6, ["completar", "organizar_frase", "escolha_multipla", "ouvir_escolher"], "básico-intermediário"),
+    (8, ["organizar_frase", "escolha_multipla", "ouvir_escolher", "interpretacao"], "intermediário"),
+    (10, ["escolha_multipla", "ouvir_escolher", "interpretacao", "producao"], "avançado"),
+]
+
+
+def _tipos_e_dificuldade_para_trilha(ordem_trilha: int) -> tuple[list[str], str]:
+    for limite, tipos, dificuldade in _FAIXAS_TIPOS_POR_TRILHA:
+        if ordem_trilha <= limite:
+            return tipos, dificuldade
+    return _FAIXAS_TIPOS_POR_TRILHA[-1][1], _FAIXAS_TIPOS_POR_TRILHA[-1][2]
+
+
+def _vocabulario_reforco(db: Session, lesson: Lesson) -> list[str]:
+    """
+    Palavras de flashcards de níveis ANTERIORES (ordem menor) dentro do
+    mesmo capítulo, pra reforçar vocabulário já ensinado. Se o nível ainda
+    não tem capítulo definido (dado legado), não reforça nada.
+    """
+    nivel = lesson.level
+    if not nivel or not nivel.capitulo_id:
+        return []
+
+    niveis_anteriores = (
+        db.query(Level)
+        .filter(Level.capitulo_id == nivel.capitulo_id, Level.ordem < nivel.ordem)
+        .all()
+    )
+    if not niveis_anteriores:
+        return []
+
+    ids_niveis_anteriores = [n.id for n in niveis_anteriores]
+    palavras = (
+        db.query(Flashcard.palavra)
+        .filter(Flashcard.nivel_id.in_(ids_niveis_anteriores))
+        .all()
+    )
+    return [p[0] for p in palavras]
 
 
 def obter_ou_gerar_flashcards(db: Session, lesson: Lesson) -> list[Flashcard]:
@@ -78,6 +125,52 @@ def obter_ou_gerar_quiz(db: Session, lesson: Lesson) -> Quiz:
     db.commit()
     db.refresh(quiz)
     return quiz
+
+
+def obter_ou_gerar_exercicios(db: Session, lesson: Lesson) -> list[Exercise]:
+    """
+    Retorna os exercícios de prática da lição, gerando via IA na primeira
+    vez. A variedade de tipos e a dificuldade dependem da trilha (Capitulo)
+    em que a lição está; vocabulário de níveis anteriores da mesma trilha é
+    passado pra IA reforçar quando fizer sentido.
+    """
+    existentes = (
+        db.query(Exercise).filter(Exercise.lesson_id == lesson.id).order_by(Exercise.ordem).all()
+    )
+    if existentes:
+        return existentes
+
+    nivel = lesson.level
+    ordem_trilha = nivel.capitulo.ordem if nivel and nivel.capitulo else 1
+    tipos_permitidos, dificuldade = _tipos_e_dificuldade_para_trilha(ordem_trilha)
+    vocabulario_reforco = _vocabulario_reforco(db, lesson)
+
+    dados = gemini_client.generate_json(
+        prompt_exercicios(lesson, tipos_permitidos, vocabulario_reforco, dificuldade)
+    )
+    exercicios_gerados = dados.get("exercicios", [])
+
+    if len(exercicios_gerados) < 8:
+        raise GeminiIndisponivelError(
+            f"O Gemini gerou apenas {len(exercicios_gerados)} exercícios (esperado ~10)."
+        )
+
+    novos = [
+        Exercise(
+            lesson_id=lesson.id,
+            ordem=indice + 1,
+            tipo=item["tipo"],
+            enunciado=item.get("enunciado"),
+            dados_json=json.dumps(item["dados"], ensure_ascii=False),
+            resposta_correta_json=json.dumps(item.get("resposta_correta"), ensure_ascii=False),
+        )
+        for indice, item in enumerate(exercicios_gerados)
+    ]
+    db.add_all(novos)
+    db.commit()
+    for e in novos:
+        db.refresh(e)
+    return novos
 
 
 def obter_ou_gerar_prova_final(db: Session, capitulo: Capitulo) -> Quiz:

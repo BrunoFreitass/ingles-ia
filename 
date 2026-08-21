@@ -1,0 +1,116 @@
+warning: in the working copy of 'alembic/env.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'alembic/script.py.mako', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'alembic/versions/795b334c61be_adiciona_capitulos_e_prova_final.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'alembic/versions/cf774f68e433_schema_inicial.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/core/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/core/database.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/core/security.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/models/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/models/conversation.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/models/flashcard.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/models/level.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/models/quiz.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/models/user.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/capitulos.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/conversation.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/flashcard_review.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/flashcards.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/immersion.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/levels.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/quiz.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/ranking.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/routers/users.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/auth.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/capitulo.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/conversation.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/flashcard.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/immersion.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/level.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/quiz.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/ranking.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/schemas/user.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/auth_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/content_generation_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/conversation_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/gemini_client.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/immersion_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/progress_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/prompts.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/ranking_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'app/services/spaced_repetition_service.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.env.example', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/.oxlintrc.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/index.html', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/auth.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/capitulos.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/client.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/conversation.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/flashcardReview.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/flashcards.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/immersion.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/levels.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/quiz.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/api/ranking.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/Brand.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/Header.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/ProtectedRoute.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/SpeakerButton.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/context/AuthContext.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/index.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/main.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Conversation.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Dashboard.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Flashcards.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Immersion.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/LessonDetail.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Login.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/ProvaFinal.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Quiz.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Ranking.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Register.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Review.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Speaking.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/utils/speech.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/vercel.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/vite.config.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_diagnostico_niveis.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_capitulos_e_ranking.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_fase3.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_fase4.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_fase5.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_progresso_nivel.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_race_condition_registro.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/_test_repeticao_espacada.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/seed.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/seed_capitulo1_niveis_3_a_10.py', LF will be replaced by CRLF the next time Git touches it
+ app/main.py                                |   17 [32m+[m[31m-[m
+ app/models/__init__.py                     |    7 [32m+[m
+ app/models/conversation.py                 |    1 [32m+[m
+ app/models/level.py                        |    1 [32m+[m
+ app/routers/flashcard_review.py            |   14 [32m+[m[31m-[m
+ app/routers/levels.py                      |    4 [32m+[m[31m-[m
+ app/routers/quiz.py                        |   18 [32m+[m[31m-[m
+ app/schemas/conversation.py                |    1 [32m+[m
+ app/schemas/level.py                       |   44 [32m+[m[31m-[m
+ app/schemas/quiz.py                        |    7 [32m+[m
+ app/schemas/ranking.py                     |    2 [32m+[m
+ app/services/content_generation_service.py |   95 [32m++[m[31m-[m
+ app/services/conversation_service.py       |    7 [32m+[m[31m-[m
+ app/services/prompts.py                    |  125 [32m++[m[31m-[m
+ app/services/ranking_service.py            |    9 [32m+[m
+ frontend/package-lock.json                 | 1220 [32m+++++++++++++++[m[31m-------------[m
+ frontend/src/App.jsx                       |   18 [32m+[m
+ frontend/src/components/Header.jsx         |    7 [32m+[m[31m-[m
+ frontend/src/pages/Conversation.jsx        |    3 [32m+[m
+ frontend/src/pages/ProvaFinal.jsx          |   31 [32m+[m[31m-[m
+ frontend/src/pages/Quiz.jsx                |   33 [32m+[m[31m-[m
+ frontend/src/pages/Ranking.jsx             |   14 [32m+[m[31m-[m
+ scripts/seed.py                            |    5 [32m+[m[31m-[m
+ 23 files changed, 1100 insertions(+), 583 deletions(-)
