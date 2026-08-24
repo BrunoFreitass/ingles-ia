@@ -294,7 +294,7 @@ if nivel6:
         nivel6,
         titulo="Família",
         tema="Vocabulário: família — mother, father, brother, sister, son, daughter, husband, wife, "
-        "grandmother, grandfather. Primeira estrutura: 'My mother.' / 'My father.'",
+        "grandmother, grandfather",
         texto_gramatica=(
             "Família: mother (mãe), father (pai), brother (irmão), sister (irmã), son (filho), "
             "daughter (filha), husband (marido), wife (esposa), grandmother (avó), grandfather (avô). "
@@ -345,7 +345,7 @@ if nivel8:
         nivel8,
         titulo="Comida e Bebida",
         tema="Vocabulário: comida e bebida — water, milk, bread, rice, meat, chicken, apple, banana, "
-        "coffee, juice. Primeira frase de gosto: 'I like apples.'",
+        "coffee, juice",
         texto_gramatica=(
             "Comida e bebida: water (água), milk (leite), bread (pão), rice (arroz), meat (carne), "
             "chicken (frango — repara que é a mesma palavra do animal), apple (maçã), banana (banana), "
@@ -400,8 +400,7 @@ if nivel10:
     atualizar_ou_criar_licao(
         nivel10,
         titulo="Primeiras Frases",
-        tema="Revisão geral: montar frases simples usando o vocabulário de todo o capítulo — "
-        "'This is a book.', 'This is my mother.', 'I have a dog.', 'I like coffee.'",
+        tema="Revisão geral: montar frases simples usando o vocabulário de todo o capítulo",
         texto_gramatica=(
             "Agora você já sabe: objetos, cores, números, pessoas, corpo, família, animais, comida e "
             "lugares. Chegou a hora de juntar tudo em frases simples. As três estruturas principais "
