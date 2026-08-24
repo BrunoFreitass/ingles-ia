@@ -14,7 +14,10 @@ compartilha a página no WhatsApp/Twitter/etc).
 """
 
 import html
+import ipaddress
 import re
+import socket
+from urllib.parse import urlparse
 
 import requests
 
@@ -29,6 +32,26 @@ _REGEX_CONTENT_ATTR = re.compile(r'content=["\']([^"\']+)["\']', re.IGNORECASE)
 def _parece_link_direto_de_imagem(url: str) -> bool:
     sem_query = url.split("?", 1)[0].split("#", 1)[0]
     return sem_query.lower().endswith(_EXTENSOES_IMAGEM)
+
+
+def _host_e_seguro(url: str) -> bool:
+    """
+    Bloqueia URLs que resolvem para IPs privados/internos (loopback, link-local,
+    faixas reservadas etc). Sem isso, um usuário autenticado poderia usar este
+    campo para fazer o servidor requisitar endereços internos (SSRF).
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        return False
+    try:
+        enderecos = socket.getaddrinfo(parsed.hostname, None)
+    except socket.gaierror:
+        return False
+    for *_, sockaddr in enderecos:
+        ip = ipaddress.ip_address(sockaddr[0])
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
+            return False
+    return True
 
 
 def _extrair_og_image(html_texto: str) -> str | None:
@@ -54,13 +77,19 @@ def resolver_url_imagem(url: str) -> str:
     if not url or _parece_link_direto_de_imagem(url):
         return url
 
+    if not _host_e_seguro(url):
+        return url
+
     try:
         resposta = requests.get(
             url,
             timeout=_TIMEOUT_SEGUNDOS,
             headers={"User-Agent": "Mozilla/5.0 (compatible; InglesIA/1.0)"},
             stream=True,
+            allow_redirects=False,
         )
+        if resposta.is_redirect:
+            return url
         resposta.raise_for_status()
 
         conteudo = b""
